@@ -3,6 +3,7 @@ import fire
 
 datePattern = re.compile(r"\d{4}/\d{1,2}/\d{1,2}")
 currency = '$'
+index = 'index.ledger'
 
 transactions = []
 
@@ -16,18 +17,19 @@ class Transaction:
 
 
 def balance():
-    with open('index.ledger') as file:
-        for lineIndex in file.readlines():
+    with open(index) as fileIndex:
+        for lineIndex in fileIndex.readlines():
             if lineIndex.startswith("!include"):
-                with open(lineIndex.split()[1]) as file2:
-                    for lineFile in file2.readlines():
+                pathFiles = lineIndex.split()[1]
+                with open(pathFiles) as fileTransactions:
+                    for lineFile in fileTransactions.readlines():
                         if datePattern.match(lineFile):
                             date = (lineFile.split()[0])
                             payee = (lineFile.strip(date))  # payee
                         if currency in lineFile:
                             account = (lineFile.split()[0])  # account
-                            if (lineFile.split()[1]).startswith('$'):
-                                value = (lineFile.split()[1]).strip('$')
+                            if (lineFile.split()[1]).startswith(currency):
+                                value = (lineFile.split()[1]).strip(currency)
                             elif (lineFile.split()[1]).startswith('-'):
                                 value = (lineFile.split()[1]).replace('-$', '-')
                             transactions.append(Transaction(date, payee, account, value))
@@ -44,27 +46,29 @@ def balance():
 
 
 def printable():
-    with open('index.ledger') as file:
-        for line in file.readlines():
-            if line.startswith("!include"):
-                with open(line.split()[1]) as f:
-                    for li in f.readlines():
-                        print(li)
+    with open(index) as fileIndex:
+        for lineIndex in fileIndex.readlines():
+            if lineIndex.startswith("!include"):
+                filePath = lineIndex.split()[1]
+                with open(filePath) as fileTransaction:
+                    for lineFile in fileTransaction.readlines():
+                        print(lineFile)
 
 
 def register():
-    with open('index.ledger') as file:
-        for lineIndex in file.readlines():
+    with open(index) as fileIndex:
+        for lineIndex in fileIndex.readlines():
             if lineIndex.startswith("!include"):
-                with open(lineIndex.split()[1]) as file2:
-                    for lineFile in file2.readlines():
+                filePath = lineIndex.split()[1]
+                with open(filePath) as fileTransaction:
+                    for lineFile in fileTransaction.readlines():
                         if datePattern.match(lineFile):
                             date = (lineFile.split()[0])
                             payee = (lineFile.strip(date))  # payee
                         if currency in lineFile:
                             account = (lineFile.split()[0])  # account
-                            if (lineFile.split()[1]).startswith('$'):
-                                value = (lineFile.split()[1]).strip('$')
+                            if (lineFile.split()[1]).startswith(currency):
+                                value = (lineFile.split()[1]).strip(currency)
                             elif (lineFile.split()[1]).startswith('-'):
                                 value = (lineFile.split()[1]).replace('-$', '-')
                             transactions.append(Transaction(date, payee, account, value))
@@ -75,15 +79,8 @@ def register():
     for x in range(0, len(transactions)):
         total = float(transactions[x].value)
         sum += total
-        print '{:^10}     {:25.17}{:^20}{:^20}{:^10}'.format(transactions[x].date, transactions[x].payee, transactions[x].account ,transactions[x].value, sum)
-
-
-
-
-
-
-
-
+        print '{:^10}     {:25.17}{:^20}{:^20}{:^10}'.format(transactions[x].date, transactions[x].payee,
+                                                             transactions[x].account, transactions[x].value, sum)
 
 
 if __name__ == '__main__':
