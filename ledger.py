@@ -18,8 +18,6 @@ class Transaction:
 def balance():
     with open('index.ledger') as file:
         for lineIndex in file.readlines():
-            if lineIndex.startswith(";"):
-                continue
             if lineIndex.startswith("!include"):
                 with open(lineIndex.split()[1]) as file2:
                     for lineFile in file2.readlines():
@@ -48,8 +46,6 @@ def balance():
 def printable():
     with open('index.ledger') as file:
         for line in file.readlines():
-            if line.startswith(";"):
-                continue
             if line.startswith("!include"):
                 with open(line.split()[1]) as f:
                     for li in f.readlines():
@@ -59,8 +55,6 @@ def printable():
 def register():
     with open('index.ledger') as file:
         for lineIndex in file.readlines():
-            if lineIndex.startswith(";"):
-                continue
             if lineIndex.startswith("!include"):
                 with open(lineIndex.split()[1]) as file2:
                     for lineFile in file2.readlines():
@@ -75,9 +69,9 @@ def register():
                                 value = (lineFile.split()[1]).replace('-$', '-')
                             transactions.append(Transaction(date, payee, account, value))
     sum = 0.0
-    print ('--------------------------------------------------------------------------------------')
+    print ('-------------------------------------------------------------------------------------------')
     print(' DATE              PAYEE                      ACCOUNT              VALUE         TOTAL')
-    print ('--------------------------------------------------------------------------------------')
+    print ('-------------------------------------------------------------------------------------------')
     for x in range(0, len(transactions)):
         total = float(transactions[x].value)
         sum += total
