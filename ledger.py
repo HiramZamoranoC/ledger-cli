@@ -1,6 +1,9 @@
 import re
 import fire
+from colorama import init
+from termcolor import colored
 
+init()
 datePattern = re.compile(r"\d{4}/\d{1,2}/\d{1,2}")
 currency = '$'
 index = 'index.ledger'
@@ -34,15 +37,16 @@ def balance():
                                 value = (lineFile.split()[1]).replace('-$', '-')
                             transactions.append(Transaction(date, payee, account, value))
     sum = 0.0
-    print ('------------------------------------')
-    print ('   VALUE             ACCOUNT')
-    print ('------------------------------------')
+    print colored('------------------------------------','red')
+    print colored('   VALUE             ACCOUNT','blue')
+    print colored('------------------------------------','red')
     for x in range(0, len(transactions)):
         print '{:^10}{:^30}'.format(transactions[x].value, transactions[x].account)
         total = float(transactions[x].value)
         sum += total
-    print(' --------')
-    print '{:^10}'.format(sum)
+    print colored(' --------','green')
+    print colored('{:^10}'.format(sum),'white',)
+    print colored(' --------', 'green')
 
 
 def printable():
@@ -73,9 +77,9 @@ def register():
                                 value = (lineFile.split()[1]).replace('-$', '-')
                             transactions.append(Transaction(date, payee, account, value))
     sum = 0.0
-    print ('-------------------------------------------------------------------------------------------')
-    print(' DATE              PAYEE                      ACCOUNT              VALUE         TOTAL')
-    print ('-------------------------------------------------------------------------------------------')
+    print colored('-------------------------------------------------------------------------------------------','red')
+    print colored(' DATE              PAYEE                      ACCOUNT              VALUE         TOTAL','blue')
+    print colored('-------------------------------------------------------------------------------------------','red')
     for x in range(0, len(transactions)):
         total = float(transactions[x].value)
         sum += total
