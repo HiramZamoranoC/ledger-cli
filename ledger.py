@@ -19,16 +19,16 @@ class Transaction:
         self.value = value
 
 
-def balance():
+def handleFile():
     with open(index) as fileIndex:
         for lineIndex in fileIndex.readlines():
             if lineIndex.startswith("!include"):
-                pathFiles = lineIndex.split()[1]
-                with open(pathFiles) as fileTransactions:
-                    for lineFile in fileTransactions.readlines():
+                pathFile = lineIndex.split()[1]
+                with open(pathFile) as fileTransaction:
+                    for lineFile in fileTransaction.readlines():
                         if datePattern.match(lineFile):
                             date = (lineFile.split()[0])
-                            payee = (lineFile.strip(date))  # payee
+                            payee = (lineFile.strip(date))
                         if currency in lineFile:
                             account = (lineFile.split()[0])  # account
                             if (lineFile.split()[1]).startswith(currency):
@@ -36,16 +36,20 @@ def balance():
                             elif (lineFile.split()[1]).startswith('-'):
                                 value = (lineFile.split()[1]).replace('-$', '-')
                             transactions.append(Transaction(date, payee, account, value))
+
+
+def balance():
+    handleFile()
     sum = 0.0
-    print colored('------------------------------------','red')
-    print colored('   VALUE             ACCOUNT','blue')
-    print colored('------------------------------------','red')
+    print colored('------------------------------------', 'red')
+    print colored('   VALUE             ACCOUNT', 'blue')
+    print colored('------------------------------------', 'red')
     for x in range(0, len(transactions)):
         print '{:^10}{:^30}'.format(transactions[x].value, transactions[x].account)
         total = float(transactions[x].value)
         sum += total
-    print colored(' --------','green')
-    print colored('{:^10}'.format(sum),'white',)
+    print colored(' --------', 'green')
+    print colored('{:^10}'.format(sum), 'white', )
     print colored(' --------', 'green')
 
 
@@ -60,26 +64,11 @@ def printable():
 
 
 def register():
-    with open(index) as fileIndex:
-        for lineIndex in fileIndex.readlines():
-            if lineIndex.startswith("!include"):
-                filePath = lineIndex.split()[1]
-                with open(filePath) as fileTransaction:
-                    for lineFile in fileTransaction.readlines():
-                        if datePattern.match(lineFile):
-                            date = (lineFile.split()[0])
-                            payee = (lineFile.strip(date))  # payee
-                        if currency in lineFile:
-                            account = (lineFile.split()[0])  # account
-                            if (lineFile.split()[1]).startswith(currency):
-                                value = (lineFile.split()[1]).strip(currency)
-                            elif (lineFile.split()[1]).startswith('-'):
-                                value = (lineFile.split()[1]).replace('-$', '-')
-                            transactions.append(Transaction(date, payee, account, value))
+    handleFile()
     sum = 0.0
-    print colored('-------------------------------------------------------------------------------------------','red')
-    print colored(' DATE              PAYEE                      ACCOUNT              VALUE         TOTAL','blue')
-    print colored('-------------------------------------------------------------------------------------------','red')
+    print colored('-------------------------------------------------------------------------------------------', 'red')
+    print colored(' DATE              PAYEE                      ACCOUNT              VALUE         TOTAL', 'blue')
+    print colored('-------------------------------------------------------------------------------------------', 'red')
     for x in range(0, len(transactions)):
         total = float(transactions[x].value)
         sum += total
