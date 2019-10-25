@@ -2,7 +2,6 @@ import re
 import fire
 from termcolor import colored
 
-
 DATA_PATTERN = re.compile(r"\d{4}/\d{1,2}/\d{1,2}")
 DOLLAR_SIGN = '$'
 INDEX = 'index.ledger'
@@ -25,16 +24,33 @@ def getTransactionFile():
                 pathFile = lineIndex.split()[1]
                 with open(pathFile) as transactionFile:
                     for lineFile in transactionFile.readlines():
-                        if DATA_PATTERN.match(lineFile):
-                            date = (lineFile.split()[0])
-                            payee = (lineFile.strip(date))
-                        if DOLLAR_SIGN in lineFile:
-                            account = (lineFile.split()[0])
-                            if (lineFile.split()[1]).startswith(DOLLAR_SIGN):
-                                value = (lineFile.split()[1]).strip(DOLLAR_SIGN)
-                            elif (lineFile.split()[1]).startswith('-'):
-                                value = (lineFile.split()[1]).replace('$', '')
-                            transactions.append(Transaction(date, payee, account, value))
+                        try:
+                            if DATA_PATTERN.match(lineFile):
+                                date = (lineFile.split()[0])
+                                payee = (lineFile.strip(date))
+                            if DOLLAR_SIGN in lineFile:
+                                account = (lineFile.split()[0])
+                                if (lineFile.split()[1]).startswith(DOLLAR_SIGN):
+                                    value = (lineFile.split()[1]).strip(DOLLAR_SIGN)
+                                elif (lineFile.split()[1]).startswith('-'):
+                                    value = (lineFile.split()[1]).replace('$', '')
+                                transactions.append(Transaction(date, payee, account, value))
+                        except ImportError:
+                            print 'Format incorrect in ' + pathFile + ' file'
+                            continue
+
+
+def register():
+    getTransactionFile()
+    sum = 0.0
+    print colored('-------------------------------------------------------------------------------------------', 'red')
+    print colored(' DATE              PAYEE                      ACCOUNT              VALUE         TOTAL', 'blue')
+    print colored('-------------------------------------------------------------------------------------------', 'red')
+    for x in range(0, len(transactions)):
+        total = float(transactions[x].value)
+        sum += total
+        print '{:^10}     {:25.17}{:^20}{:^20}{:^10}'.format(transactions[x].date, transactions[x].payee,
+                                                             transactions[x].account, transactions[x].value, sum)
 
 
 def balance():
@@ -60,19 +76,6 @@ def printable():
                 with open(filePath) as transactionFile:
                     for lineFile in transactionFile.readlines():
                         print(lineFile)
-
-
-def register():
-    getTransactionFile()
-    sum = 0.0
-    print colored('-------------------------------------------------------------------------------------------', 'red')
-    print colored(' DATE              PAYEE                      ACCOUNT              VALUE         TOTAL', 'blue')
-    print colored('-------------------------------------------------------------------------------------------', 'red')
-    for x in range(0, len(transactions)):
-        total = float(transactions[x].value)
-        sum += total
-        print '{:^10}     {:25.17}{:^20}{:^20}{:^10}'.format(transactions[x].date, transactions[x].payee,
-                                                             transactions[x].account, transactions[x].value, sum)
 
 
 if __name__ == '__main__':
