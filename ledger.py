@@ -1,12 +1,11 @@
 import re
 import fire
-from colorama import init
 from termcolor import colored
 
-init()
-datePattern = re.compile(r"\d{4}/\d{1,2}/\d{1,2}")
-currency = '$'
-index = 'index.ledger'
+
+DATA_PATTERN = re.compile(r"\d{4}/\d{1,2}/\d{1,2}")
+DOLLAR_SIGN = '$'
+INDEX = 'index.ledger'
 
 transactions = []
 
@@ -19,27 +18,27 @@ class Transaction:
         self.value = value
 
 
-def handleFile():
-    with open(index) as fileIndex:
-        for lineIndex in fileIndex.readlines():
+def getTransactionFile():
+    with open(INDEX) as indexFile:
+        for lineIndex in indexFile.readlines():
             if lineIndex.startswith("!include"):
                 pathFile = lineIndex.split()[1]
-                with open(pathFile) as fileTransaction:
-                    for lineFile in fileTransaction.readlines():
-                        if datePattern.match(lineFile):
+                with open(pathFile) as transactionFile:
+                    for lineFile in transactionFile.readlines():
+                        if DATA_PATTERN.match(lineFile):
                             date = (lineFile.split()[0])
                             payee = (lineFile.strip(date))
-                        if currency in lineFile:
-                            account = (lineFile.split()[0])  # account
-                            if (lineFile.split()[1]).startswith(currency):
-                                value = (lineFile.split()[1]).strip(currency)
+                        if DOLLAR_SIGN in lineFile:
+                            account = (lineFile.split()[0])
+                            if (lineFile.split()[1]).startswith(DOLLAR_SIGN):
+                                value = (lineFile.split()[1]).strip(DOLLAR_SIGN)
                             elif (lineFile.split()[1]).startswith('-'):
-                                value = (lineFile.split()[1]).replace('-$', '-')
+                                value = (lineFile.split()[1]).replace('$', '')
                             transactions.append(Transaction(date, payee, account, value))
 
 
 def balance():
-    handleFile()
+    getTransactionFile()
     sum = 0.0
     print colored('------------------------------------', 'red')
     print colored('   VALUE             ACCOUNT', 'blue')
@@ -54,17 +53,17 @@ def balance():
 
 
 def printable():
-    with open(index) as fileIndex:
-        for lineIndex in fileIndex.readlines():
+    with open(INDEX) as indexFile:
+        for lineIndex in indexFile.readlines():
             if lineIndex.startswith("!include"):
                 filePath = lineIndex.split()[1]
-                with open(filePath) as fileTransaction:
-                    for lineFile in fileTransaction.readlines():
+                with open(filePath) as transactionFile:
+                    for lineFile in transactionFile.readlines():
                         print(lineFile)
 
 
 def register():
-    handleFile()
+    getTransactionFile()
     sum = 0.0
     print colored('-------------------------------------------------------------------------------------------', 'red')
     print colored(' DATE              PAYEE                      ACCOUNT              VALUE         TOTAL', 'blue')
