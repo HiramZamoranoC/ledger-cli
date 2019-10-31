@@ -6,7 +6,6 @@ DATA_PATTERN = re.compile(r"\d{4}/\d{1,2}/\d{1,2}")
 DOLLAR_SIGN = '$'
 INDEX = 'index.ledger'
 
-transactions = []
 
 
 class Transaction:
@@ -17,7 +16,7 @@ class Transaction:
         self.value = value
 
 
-def getTransactionFile():
+def getTransactionFile(transactions):
     with open(INDEX) as indexFile:
         for lineIndex in indexFile.readlines():
             if lineIndex.startswith("!include"):
@@ -41,7 +40,8 @@ def getTransactionFile():
 
 
 def register():
-    getTransactionFile()
+    transactions = []
+    getTransactionFile(transactions)
     sum = 0.0
     print colored('-------------------------------------------------------------------------------------------', 'red')
     print colored(' DATE              PAYEE                      ACCOUNT              VALUE         TOTAL', 'blue')
@@ -54,6 +54,7 @@ def register():
 
 
 def balance():
+    transactions = []
     getTransactionFile()
     sum = 0.0
     print colored('------------------------------------', 'red')
