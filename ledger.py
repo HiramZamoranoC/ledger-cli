@@ -7,7 +7,6 @@ DOLLAR_SIGN = '$'
 INDEX = 'index.ledger'
 
 
-
 class Transaction:
     def __init__(self, date=None, payee=None, account=None, value=None):
         self.date = date
@@ -21,22 +20,27 @@ def getTransactionFile(transactions):
         for lineIndex in indexFile.readlines():
             if lineIndex.startswith("!include"):
                 pathFile = lineIndex.split()[1]
-                with open(pathFile) as transactionFile:
-                    for lineFile in transactionFile.readlines():
-                        try:
-                            if DATA_PATTERN.match(lineFile):
-                                date = (lineFile.split()[0])
-                                payee = (lineFile.strip(date))
-                            if DOLLAR_SIGN in lineFile:
-                                account = (lineFile.split()[0])
-                                if (lineFile.split()[1]).startswith(DOLLAR_SIGN):
-                                    value = (lineFile.split()[1]).strip(DOLLAR_SIGN)
-                                elif (lineFile.split()[1]).startswith('-'):
-                                    value = (lineFile.split()[1]).replace('$', '')
-                                transactions.append(Transaction(date, payee, account, value))
-                        except ImportError:
-                            print 'Format incorrect in ' + pathFile + ' file'
-                            continue
+                openTransactionFile(pathFile, transactions)
+
+
+
+def openTransactionFile(pathFile, transactions):
+    with open(pathFile) as transactionFile:
+        for lineFile in transactionFile.readlines():
+            try:
+                if DATA_PATTERN.match(lineFile):
+                    date = (lineFile.split()[0])
+                    payee = (lineFile.strip(date))
+                if DOLLAR_SIGN in lineFile:
+                    account = (lineFile.split()[0])
+                    if (lineFile.split()[1]).startswith(DOLLAR_SIGN):
+                        value = (lineFile.split()[1]).strip(DOLLAR_SIGN)
+                    elif (lineFile.split()[1]).startswith('-'):
+                        value = (lineFile.split()[1]).replace('$', '')
+                    transactions.append(Transaction(date, payee, account, value))
+            except ImportError:
+                print 'Format incorrect in ' + pathFile + ' file'
+                continue
 
 
 def register():
@@ -55,7 +59,7 @@ def register():
 
 def balance():
     transactions = []
-    getTransactionFile()
+    getTransactionFile(transactions)
     sum = 0.0
     print colored('------------------------------------', 'red')
     print colored('   VALUE             ACCOUNT', 'blue')
