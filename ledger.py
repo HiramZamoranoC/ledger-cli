@@ -40,7 +40,7 @@ def openTransactionFile(pathFile, transactions):
                     transactions.append(Transaction(date, payee, account, value))
             except ImportError:
                 print 'Format incorrect in ' + pathFile + ' file'
-                continue
+
 
 
 def register():
